@@ -16,6 +16,7 @@ namespace HelloProcessList
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             MainFormCmd cmd = new MainFormCmd();
+
             Application.Run(new MainForm(cmd));
         }
     }
