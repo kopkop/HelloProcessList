@@ -64,10 +64,11 @@ namespace HelloProcessList
         private bool applyNewChain(LinkedList<int> processChain)
         {
             int topProcess = processChain.First.Value;
+            processChain.RemoveFirst();
             if (processTree.ContainsKey(topProcess))
             {
                 Hashtable tree = processTree[topProcess] as Hashtable;
-                processChain.RemoveFirst();
+               
                 if (processChain.Count > 0)
                 {
                     applyChainToTree(tree, processChain);
