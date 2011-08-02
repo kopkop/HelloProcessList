@@ -11,10 +11,11 @@ namespace HelloProcessList
 {
     public class ProcessTreeBuilder
     {
-        private ArrayList processTree;
+        private Hashtable processTree;
 
         public ProcessTreeBuilder()
         {
+            processTree = new Hashtable();
             Process[] processes = Process.GetProcesses();
             HashSet<int> pidSet = new HashSet<int>();
             foreach (Process p in processes)
@@ -29,23 +30,93 @@ namespace HelloProcessList
          */
         private bool CreateTree(HashSet<int> processIds)
         {
+            HashSet<int> processedIds = new HashSet<int>();
             foreach (int pid in processIds)
             {
+                if (processedIds.Contains(pid)) 
+                {
+                    continue;
+                }
                 LinkedList<int> pidChain = new LinkedList<int>();
                 int rootProcessId = getProcessIdChain(pid, pidChain);
+                // Add the ids to processed
+                foreach (int id in pidChain)
+                {
+                    processedIds.Add(id);
+                }
                 // Remove the top one since it is useless
                 if (pidChain.Count > 1)
                 {
                     pidChain.RemoveFirst();
                 }
-                foreach (int chainedPid in pidChain)
+                if (pidChain.Count > 0)
                 {
-
+                    applyNewChain(pidChain);
                 }
-
+                
             }
             return true;
         }
+
+        /**
+         * This function is used to  
+         */
+        private bool applyNewChain(LinkedList<int> processChain)
+        {
+            int topProcess = processChain.First.Value;
+            if (processTree.ContainsKey(topProcess))
+            {
+                Hashtable tree = processTree[topProcess] as Hashtable;
+                processChain.RemoveFirst();
+                if (processChain.Count > 0)
+                {
+                    applyChainToTree(tree, processChain);
+                }                
+            } 
+            else
+            {
+                Hashtable tree = createNewTree(processChain);
+                processTree.Add(topProcess, tree);
+            }
+            return true;
+        }
+
+        private Hashtable createNewTree(LinkedList<int> processChain)
+        {
+            if (processChain.Count == 0)
+            {
+                return new Hashtable();
+            }
+            else
+            {
+                Hashtable leaf = new Hashtable();
+                int firstValue = processChain.First.Value;
+                processChain.RemoveFirst();
+                leaf.Add(firstValue, createNewTree(processChain));
+                return leaf;
+            }
+        }
+
+        private bool applyChainToTree(Hashtable tree, LinkedList<int> chain)
+        {
+            if (chain.Count > 0)
+            {
+                int firstValue = chain.First.Value;
+                chain.RemoveFirst();
+                if (tree.ContainsKey(firstValue))
+                {
+                    Hashtable subTree = tree[firstValue] as Hashtable;
+                    return applyChainToTree(subTree, chain);
+                }
+                else
+                {
+                    Hashtable newTree = createNewTree(chain);
+                    tree.Add(firstValue, newTree);
+                }
+            }
+            return true;
+        }
+
 
 
         private int getProcessIdChain(int pid, LinkedList<int> pidChain)
@@ -89,7 +160,7 @@ namespace HelloProcessList
 
 
 
-        public ArrayList ProcessTree
+        public Hashtable ProcessTree
         {
             get
             {

@@ -18,6 +18,13 @@ namespace HelloProcessList
         {
             
         }
-    
+
+        public ProcessTreeBuilder TreeBuilder
+        {
+            get
+            {
+                return processTreeBuilder;
+            }
+        }
     }
 }
