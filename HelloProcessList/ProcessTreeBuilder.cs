@@ -5,11 +5,14 @@ using System.Text;
 using System.Diagnostics;
 using System.Management;
 using System.Globalization;
+using System.Collections;
 
 namespace HelloProcessList
 {
     public class ProcessTreeBuilder
     {
+        private ArrayList processTree;
+
         public ProcessTreeBuilder()
         {
             Process[] processes = Process.GetProcesses();
@@ -18,14 +21,7 @@ namespace HelloProcessList
             {
                 pidSet.Add(p.Id);
             }
-            foreach (int pid in pidSet)
-            {
-            }
-
-           //int pid = 6032;
-            //LinkedList<int> procList = new LinkedList<int>();
-            //int rootPid = getProcessIdChain(pid, procList);
-           // int rootPid = getRootProcessId(pid);
+            CreateTree(pidSet);
         }
 
         /**
@@ -33,8 +29,22 @@ namespace HelloProcessList
          */
         private bool CreateTree(HashSet<int> processIds)
         {
+            foreach (int pid in processIds)
+            {
+                LinkedList<int> pidChain = new LinkedList<int>();
+                int rootProcessId = getProcessIdChain(pid, pidChain);
+                // Remove the top one since it is useless
+                if (pidChain.Count > 1)
+                {
+                    pidChain.RemoveFirst();
+                }
+                foreach (int chainedPid in pidChain)
+                {
 
-            return false;
+                }
+
+            }
+            return true;
         }
 
 
@@ -75,6 +85,16 @@ namespace HelloProcessList
                 parentPid = Convert.ToInt32(mo["ParentProcessId"], CultureInfo.InvariantCulture);
             }
             return parentPid;
+        }
+
+
+
+        public ArrayList ProcessTree
+        {
+            get
+            {
+                return processTree;
+            }
         }
     }
 }
