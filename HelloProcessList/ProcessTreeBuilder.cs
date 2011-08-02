@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Diagnostics;
 using System.Management;
 using System.Globalization;
 using System.Collections;
+
 
 namespace HelloProcessList
 {
@@ -13,22 +13,16 @@ namespace HelloProcessList
     {
         private Hashtable processTree;
 
-        public ProcessTreeBuilder()
+        public ProcessTreeBuilder(List<int> processList)
         {
             processTree = new Hashtable();
-            Process[] processes = Process.GetProcesses();
-            HashSet<int> pidSet = new HashSet<int>();
-            foreach (Process p in processes)
-            {
-                pidSet.Add(p.Id);
-            }
-            CreateTree(pidSet);
+            CreateTree(processList);
         }
 
         /**
          * 
          */
-        private bool CreateTree(HashSet<int> processIds)
+        private bool CreateTree(List<int> processIds)
         {
             HashSet<int> processedIds = new HashSet<int>();
             foreach (int pid in processIds)

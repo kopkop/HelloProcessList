@@ -54,6 +54,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MainFormCmd.cs" />
+    <Compile Include="ProcessMgr.cs" />
     <Compile Include="ProcessTreeBuilder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
