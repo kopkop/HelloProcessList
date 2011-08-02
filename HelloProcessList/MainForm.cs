@@ -13,9 +13,10 @@ namespace HelloProcessList
     {
         private MainFormCmd cmd;
 
-        public MainForm(MainFormCmd cmd)
+        public MainForm()
         {
             InitializeComponent();
+            MainFormCmd cmd = new MainFormCmd(this);
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

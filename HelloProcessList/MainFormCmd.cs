@@ -7,9 +7,11 @@ namespace HelloProcessList
 {
     public class MainFormCmd
     {
-        public MainFormCmd()
-        {
+        private ProcessTreeBuilder processTreeBuilder;
 
+        public MainFormCmd(MainForm mainForm)
+        {
+            processTreeBuilder = new ProcessTreeBuilder();
         }
 
         public void onClose()
