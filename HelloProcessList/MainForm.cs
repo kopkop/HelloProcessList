@@ -18,7 +18,8 @@ namespace HelloProcessList
         public MainForm()
         {
             InitializeComponent();
-            cmd = new MainFormCmd(this);
+            cmd = MainFormCmd.getInstance();
+            cmd.MainProcessForm = this;
             initProcessTree();
         }
 
@@ -30,7 +31,7 @@ namespace HelloProcessList
         private void initProcessTree()
         {
             Hashtable processTree = cmd.TreeBuilder.ProcessTree;
-            ImageList imageList = prepareImageList();
+            processTreeView.ImageList = imageList;
             processTreeView.BeginUpdate();
             applyTreetoNodes(processTreeView.Nodes, processTree);
             processTreeView.EndUpdate();
@@ -42,41 +43,42 @@ namespace HelloProcessList
             foreach (int pid in rootNodes)
             {
                 TreeNode treeNode = getTreeNodeByPid(pid);
-                treeNodes.Add(treeNode);
-                Hashtable subTree = tree[pid] as Hashtable;
-                if (subTree.Count != 0)
+                if (null != treeNode)
                 {
-                    applyTreetoNodes(treeNode.Nodes, subTree);
-                }
+                    treeNodes.Add(treeNode);
+                    Hashtable subTree = tree[pid] as Hashtable;
+                    if (subTree.Count != 0)
+                    {
+                        applyTreetoNodes(treeNode.Nodes, subTree);
+                    }
+                }                                
             }
         }
 
         private TreeNode getTreeNodeByPid(int pid)
         {
-            Process process = Process.GetProcessById(pid);
-            string procFile = "n/a";
             try
             {
-                procFile = process.Modules[0].FileName;
+                Process process = Process.GetProcessById(pid);
+                int imageIndex = (int)(cmd.ProcessManager.ImageIDMap[pid]);
+                TreeNode node = new TreeNode(process.ProcessName, imageIndex, imageIndex);
+                return node;
             }
-            catch (Win32Exception)
+            catch (System.Exception)
             {
-                procFile = "n/a";
+            	
             }
-            Icon ico = null;
-            if (procFile != "n/a")
-            {
-                ico = Icon.ExtractAssociatedIcon(@procFile);
-            }
-            TreeNode node = new TreeNode(process.ProcessName);
-            return node;
+            return null;
         }
 
-        private ImageList prepareImageList()
+
+        public ImageList FormImageList
         {
-            ImageList imageList = new ImageList();
-            //imageList.Images.Add()
-            return imageList;
+            get
+            {
+                return imageList;
+            }
         }
+        
     }
 }
