@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Collections;
 using System.Diagnostics;
+using DevExpress.XtraTreeList.Columns;
 
 namespace HelloProcessList
 {
@@ -21,6 +22,7 @@ namespace HelloProcessList
             cmd = MainFormCmd.getInstance();
             cmd.MainProcessForm = this;
             initProcessTree();
+            initTreeList();
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -62,6 +64,7 @@ namespace HelloProcessList
                 Process process = Process.GetProcessById(pid);
                 int imageIndex = (int)(cmd.ProcessManager.ImageIDMap[pid]);
                 TreeNode node = new TreeNode(process.ProcessName, imageIndex, imageIndex);
+                //node.ToolTipText = imageList.Images[imageIndex].
                 return node;
             }
             catch (System.Exception)
@@ -69,6 +72,32 @@ namespace HelloProcessList
             	
             }
             return null;
+        }
+
+
+        private void initTreeList()
+        {
+            Hashtable processTree = cmd.TreeBuilder.ProcessTree;
+            treeList.BeginUnboundLoad();
+            applyTreetoDexNodes(-1, processTree);
+            treeList.EndUnboundLoad();
+        }
+
+        private void applyTreetoDexNodes(int rootNodeId, Hashtable tree)
+        {
+            //if (rootNodeId == -1)
+            //{
+                ICollection rootNodes = tree.Keys;
+                foreach (int pid in rootNodes)
+                {
+                    object[] obj = cmd.ProcessManager.getObjByPid(pid);
+                    if (null != obj)
+                    {
+                        treeList.AppendNode(obj, null);
+                    }
+                    
+                }
+            //}
         }
 
 

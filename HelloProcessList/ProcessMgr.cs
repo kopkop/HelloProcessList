@@ -14,6 +14,7 @@ namespace HelloProcessList
     {
         private List<int> processIds;
         private Hashtable nameIdMap;
+        private Hashtable processMap;
         //private PictureBox picBox;
 
         //private Form form;
@@ -22,7 +23,7 @@ namespace HelloProcessList
         {
             processIds = new List<int>();
             nameIdMap = new Hashtable();
-
+            processMap = new Hashtable();
             Process[] processes = Process.GetProcesses();
 
             //form = new Form();
@@ -36,6 +37,7 @@ namespace HelloProcessList
                     if (!p.HasExited)
                     {
                         processIds.Add(p.Id);
+                        processMap.Add(p.Id, p);
                         InitImageByProcess(p);
                     }
                 }
@@ -44,6 +46,34 @@ namespace HelloProcessList
                     continue;
                 }
                 
+            }
+        }
+
+        public object[] getObjByPid(int pid)
+        {
+            if (processMap.ContainsKey(pid)) 
+            { 
+                try
+                {
+                    Process process = processMap[pid] as Process;
+                    if (null != process)
+                    {
+                        return new object[] { process.ProcessName, process.Id, process.MainModule.FileName};
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                catch (System.Exception)
+                {
+                    return null;
+                }
+                
+            }
+            else
+            {
+                return null;
             }
         }
 
@@ -82,6 +112,14 @@ namespace HelloProcessList
             get
             {
                 return nameIdMap;
+            }
+        }
+
+        public Hashtable ProcessMap
+        {
+            get
+            {
+                return processMap;
             }
         }
     }
