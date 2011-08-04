@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Collections;
 using System.Diagnostics;
 using DevExpress.XtraTreeList.Columns;
+using DevExpress.XtraTreeList.Nodes;
 
 namespace HelloProcessList
 {
@@ -21,7 +22,6 @@ namespace HelloProcessList
             InitializeComponent();
             cmd = MainFormCmd.getInstance();
             cmd.MainProcessForm = this;
-            initProcessTree();
             initTreeList();
         }
 
@@ -30,74 +30,55 @@ namespace HelloProcessList
             cmd.onClose();
         }
 
-        private void initProcessTree()
+        private void initTreeList()
         {
+            //treeList.Columns.Add();
             Hashtable processTree = cmd.TreeBuilder.ProcessTree;
-            processTreeView.ImageList = imageList;
-            processTreeView.BeginUpdate();
-            applyTreetoNodes(processTreeView.Nodes, processTree);
-            processTreeView.EndUpdate();
+            treeList.StateImageList = imageList;
+            CreateColumns();
+            treeList.BeginUnboundLoad();
+            applyTreetoDexNodes(null, processTree);
+            treeList.EndUnboundLoad();
+            treeList.Refresh();
         }
 
-        private void applyTreetoNodes(TreeNodeCollection treeNodes, Hashtable tree)
+        private void CreateColumns()
         {
+            // Create three columns.
+            treeList.BeginUpdate();
+            treeList.Columns.Add();
+            treeList.Columns[0].Caption = "Process Name";
+            treeList.Columns[0].VisibleIndex = 0;
+            treeList.Columns.Add();
+            treeList.Columns[1].Caption = "Process Id";
+            treeList.Columns[1].VisibleIndex = 1;
+            treeList.Columns.Add();
+            treeList.Columns[2].Caption = "File Path";
+            treeList.Columns[2].VisibleIndex = 2;
+            treeList.EndUpdate();
+        }
+
+
+        private void applyTreetoDexNodes(TreeListNode rootNode, Hashtable tree)
+        {
+
             ICollection rootNodes = tree.Keys;
             foreach (int pid in rootNodes)
             {
-                TreeNode treeNode = getTreeNodeByPid(pid);
-                if (null != treeNode)
+                object[] obj = cmd.ProcessManager.getObjByPid(pid);
+                if (null != obj)
                 {
-                    treeNodes.Add(treeNode);
+                    TreeListNode node = treeList.AppendNode(obj, rootNode);
+                    node.StateImageIndex = (int)(cmd.ProcessManager.ImageIDMap[pid]);
+                    //node.ImageIndex = (int)(cmd.ProcessManager.ImageIDMap[pid]);
                     Hashtable subTree = tree[pid] as Hashtable;
-                    if (subTree.Count != 0)
+                    if (0 != subTree.Count)
                     {
-                        applyTreetoNodes(treeNode.Nodes, subTree);
+                        applyTreetoDexNodes(node, subTree);
                     }
-                }                                
-            }
-        }
-
-        private TreeNode getTreeNodeByPid(int pid)
-        {
-            try
-            {
-                Process process = Process.GetProcessById(pid);
-                int imageIndex = (int)(cmd.ProcessManager.ImageIDMap[pid]);
-                TreeNode node = new TreeNode(process.ProcessName, imageIndex, imageIndex);
-                //node.ToolTipText = imageList.Images[imageIndex].
-                return node;
-            }
-            catch (System.Exception)
-            {
-            	
-            }
-            return null;
-        }
-
-
-        private void initTreeList()
-        {
-            Hashtable processTree = cmd.TreeBuilder.ProcessTree;
-            treeList.BeginUnboundLoad();
-            applyTreetoDexNodes(-1, processTree);
-            treeList.EndUnboundLoad();
-        }
-
-        private void applyTreetoDexNodes(int rootNodeId, Hashtable tree)
-        {
-            //if (rootNodeId == -1)
-            //{
-                ICollection rootNodes = tree.Keys;
-                foreach (int pid in rootNodes)
-                {
-                    object[] obj = cmd.ProcessManager.getObjByPid(pid);
-                    if (null != obj)
-                    {
-                        treeList.AppendNode(obj, null);
-                    }
-                    
                 }
-            //}
+
+            }
         }
 
 
