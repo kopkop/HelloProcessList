@@ -58,7 +58,7 @@
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -76,6 +76,7 @@
             this.treeList.Location = new System.Drawing.Point(0, 27);
             this.treeList.Name = "treeList";
             this.treeList.Size = new System.Drawing.Size(443, 244);
+            this.treeList.StateImageList = this.imageList;
             this.treeList.TabIndex = 0;
             // 
             // MainForm

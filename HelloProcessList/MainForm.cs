@@ -34,7 +34,6 @@ namespace HelloProcessList
         {
             //treeList.Columns.Add();
             Hashtable processTree = cmd.TreeBuilder.ProcessTree;
-            treeList.StateImageList = imageList;
             CreateColumns();
             treeList.BeginUnboundLoad();
             applyTreetoDexNodes(null, processTree);
